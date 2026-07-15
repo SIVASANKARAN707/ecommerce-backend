@@ -1,0 +1,109 @@
+from flask import Blueprint , request,jsonify
+from extensions import db
+from models.users import User
+from utils.jwt_helper import token_verification
+
+user_bp = Blueprint("user",__name__)
+
+@user_bp.route("/users", methods=["GET"])
+def get_users():
+    
+    decoded = token_verification()
+
+    if not decoded:
+        return jsonify({
+            "success": False,
+            "message":"invalid or missing token"
+        }),401
+    
+    users = User.query.all()
+
+    return jsonify({
+        "users":[{
+            "id":user.id,
+            "email":user.email,
+            "username":user.username} for user in users
+        ]
+    }),200
+
+@user_bp.route("/users/<int:id>", methods = ["GET"])
+def get_particular_user(id):
+
+    decoded = token_verification()
+    if not decoded:
+        return jsonify({
+            "success":False,
+            "message":"invalid or missing token"
+        }),401
+    user = User.query.get(id)
+    if user:
+        return jsonify({
+            "id":user.id,
+            "email":user.email,
+            "username":user.username
+
+    }),200
+    if not user:
+        return jsonify({
+            "success":False,
+            "message":"user not founded"
+        }),404
+    
+
+@user_bp.route("/users/<int:id>", methods = ["PUT"])
+def update_user(id):
+
+    decoded = token_verification()
+    if not decoded:
+        return jsonify({
+            "success":False,
+            "message":"invalid or missing token"
+        }),401
+    user = User.query.get(id)
+    
+    if not user:
+        return jsonify({
+            "success":False,
+            "message":"user not founded"
+        }),404
+    data = request.json
+    user.username = data.get("username",user.username)
+    user.email = data.get("email",user.email)
+    user.password = data.get("new_password",user.password)
+
+
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": "user updated successfully"
+    }), 200
+
+
+@user_bp.route("/users/<int:id>", methods = ["DELETE"])
+def delete_user(id):
+
+    decoded = token_verification()
+    if not decoded:
+        return jsonify({
+            "success":False,
+            "message":"invalid or missing token"
+        }),401
+    user = User.query.get(id)
+    if not user:
+        return jsonify({
+            "success":False,
+            "message":"user not founded"
+        }),404
+    
+    if user.id != decoded["user_id"]:
+        return jsonify({"message":"forbiten"}), 403
+    
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "message": "user deleted successfully"
+    }), 200
