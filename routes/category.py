@@ -1,14 +1,12 @@
-from flask import request , Blueprint, jsonify
-from utils.jwt_helper import token_verification
+from flask import Blueprint, request, jsonify
 from extensions import db
 from models.category import Category
-from models.products import Product
+from utils.jwt_helper import token_verification
+
+category_bp = Blueprint("category", __name__)
 
 
-
-category_bp = Blueprint("category",__name__)
-
-@category_bp.route("/categories",methods=["POST"])
+@category_bp.route("/categories", methods=["POST"])
 def create_category():
     """
 Create a new category
@@ -17,7 +15,6 @@ tags:
   - Categories
 
 parameters:
-
   - name: Authorization
     in: header
     type: string
@@ -34,7 +31,6 @@ parameters:
           example: Electronics
 
 responses:
-
   201:
     description: Category created successfully
 
@@ -47,37 +43,132 @@ responses:
   403:
     description: Only admin can create category
 """
+
     decoded = token_verification()
 
     if not decoded:
-        return jsonify({"message":"missing or invalid token"})
+        return jsonify({"message": "Missing or Invalid Token"}), 401
+
     if decoded["role"] != "admin":
-        return jsonify({"message":"forbidden"}),403
-    if decoded["role"] == "admin":
-    
-        data = request.json
+        return jsonify({"message": "Forbidden"}), 403
 
-    product_name = data.get("product_name")
-    product_id = data.get("product_id")
-    category_title = data.get("category_title")
+    data = request.json
 
+    name = data.get("name")
 
-    if not category_title:
-        return ({"message":"title is missing"})
-    
-    if not product_name:
-        return ({"message":"product_name is missing"})
-    
-    new_category = Category(
-        name=category_title
-        )   
-    db.session.add(new_category)
+    if not name:
+        return jsonify({
+            "message": "name is missing"
+        }), 400
+
+    existing_category = Category.query.filter_by(name=name).first()
+
+    if existing_category:
+        return jsonify({
+            "message": "Category already exists"
+        }), 400
+
+    category = Category(name=name)
+
+    db.session.add(category)
     db.session.commit()
 
-    return jsonify({"message":"category created successfully"}),200
+    return jsonify({
+        "message": "Category created successfully"
+    }), 201
 
 
-@category_bp.route("/categories/<int:id>",methods=["PUT"])
+@category_bp.route("/categories", methods=["GET"])
+def get_categories():
+    """
+Get all categories
+---
+tags:
+  - Categories
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+responses:
+  200:
+    description: Categories fetched successfully
+
+  401:
+    description: Missing or invalid token
+"""
+
+    decoded = token_verification()
+
+    if not decoded:
+        return jsonify({"message": "Missing or Invalid Token"}), 401
+
+    categories = Category.query.all()
+
+    return jsonify({
+        "categories": [
+            {
+                "id": category.id,
+                "name": category.name
+            }
+            for category in categories
+        ]
+    }), 200
+
+
+@category_bp.route("/categories/<int:id>", methods=["GET"])
+def get_category(id):
+    """
+Get category by ID
+---
+tags:
+  - Categories
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+  200:
+    description: Category fetched successfully
+
+  401:
+    description: Missing or invalid token
+
+  404:
+    description: Category not found
+"""
+
+    decoded = token_verification()
+
+    if not decoded:
+        return jsonify({"message": "Missing or Invalid Token"}), 401
+
+    category = Category.query.get(id)
+
+    if not category:
+        return jsonify({
+            "message": "Category not found"
+        }), 404
+
+    return jsonify({
+        "id": category.id,
+        "name": category.name
+    }), 200
+
+
+@category_bp.route("/categories/<int:id>", methods=["PUT"])
 def update_category(id):
     """
 Update category
@@ -86,7 +177,6 @@ tags:
   - Categories
 
 parameters:
-
   - name: Authorization
     in: header
     type: string
@@ -109,7 +199,6 @@ parameters:
           example: Home Appliances
 
 responses:
-
   200:
     description: Category updated successfully
 
@@ -125,31 +214,41 @@ responses:
   404:
     description: Category not found
 """
+
     decoded = token_verification()
 
     if not decoded:
-        return jsonify({"message":"missing or invalid token"})
+        return jsonify({"message": "Missing or Invalid Token"}), 401
+
     if decoded["role"] != "admin":
-        return jsonify({"message":"forbidden"}),403
-    if decoded["role"] == "admin":
-    
-        data = request.json
+        return jsonify({"message": "Forbidden"}), 403
 
-    product_name = data.get("product.name")
-    category_title = data.get("catagory_title")
+    category = Category.query.get(id)
 
+    if not category:
+        return jsonify({
+            "message": "Category not found"
+        }), 404
 
-    if not category_title:
-        return ({"message":"title is missing"})
-    if not product_name:
-        return ({"message":"product_name is missing"})
-    
+    data = request.json
+
+    name = data.get("name")
+
+    if not name:
+        return jsonify({
+            "message": "name is missing"
+        }), 400
+
+    category.name = name
+
     db.session.commit()
 
-    return jsonify({"message":"category updated successfully"}),200
+    return jsonify({
+        "message": "Category updated successfully"
+    }), 200
 
 
-@category_bp.route("/categories/<int:id>",methods=["DELETE"])
+@category_bp.route("/categories/<int:id>", methods=["DELETE"])
 def delete_category(id):
     """
 Delete category
@@ -158,7 +257,6 @@ tags:
   - Categories
 
 parameters:
-
   - name: Authorization
     in: header
     type: string
@@ -172,7 +270,6 @@ parameters:
     example: 1
 
 responses:
-
   200:
     description: Category deleted successfully
 
@@ -185,117 +282,25 @@ responses:
   404:
     description: Category not found
 """
+
     decoded = token_verification()
 
     if not decoded:
-        return jsonify({"message":"missing or invalid token"})
+        return jsonify({"message": "Missing or Invalid Token"}), 401
+
     if decoded["role"] != "admin":
-        return jsonify({"message":"forbidden"}),403
-    if decoded["role"] == "admin":
-        category = Category.query.get(id)
-        if not category:
-            return jsonify({
-            "success": False,
-            "message": "product not found"
+        return jsonify({"message": "Forbidden"}), 403
+
+    category = Category.query.get(id)
+
+    if not category:
+        return jsonify({
+            "message": "Category not found"
         }), 404
 
-
-        db.session.delete(Category)
-        db.session.commit()
-
-        return jsonify({"message":"category deleted successfully"}),200
-
-
-@category_bp.route("/categories/<int:id>",methods=["GET"])
-def select_particular_catagory(id):
-    """
-Get category by ID
----
-tags:
-  - Categories
-
-parameters:
-
-  - name: Authorization
-    in: header
-    type: string
-    required: true
-
-  - name: id
-    in: path
-    type: integer
-    required: true
-    example: 1
-
-responses:
-
-  200:
-    description: Category fetched successfully
-
-  401:
-    description: Missing or invalid token
-
-  404:
-    description: Category not found
-"""
-    decoded = token_verification()
-
-    if not decoded:
-        return jsonify({"message":"missing or invalid token"})
-        
-    category = Category.query.filter_by(user_id=decoded["user_id"]).all()
-    category = Category.query.get(id)
-    if not category:
-            return jsonify({
-            "success": False,
-            "message": "product not found"
-    }), 404
-
+    db.session.delete(category)
+    db.session.commit()
 
     return jsonify({
-            "Category": [{
-            "category_title":category.title,
-            "category_id":category.id}for category in category]
-        }),200
-
-
-
-@category_bp.route("/categories",methods=["GET"])
-def view_all_category():
-    """
-Get all categories
----
-tags:
-  - Categories
-
-parameters:
-
-  - name: Authorization
-    in: header
-    type: string
-    required: true
-    description: JWT Token
-
-responses:
-
-  200:
-    description: Categories fetched successfully
-
-  401:
-    description: Missing or invalid token
-"""
-    decoded = token_verification()
-
-    if not decoded:
-        return jsonify({"message":"missing or invalid token"})
-        
-    category = Category.query.filter_by(user_id=decoded["user_id"]).all()
-    category = Category.query.all()
-
-
-    return jsonify({
-            "Category": [{
-            "category_title":category.title,
-            "category_id":category.id}for category in category]
-        }),200
-
+        "message": "Category deleted successfully"
+    }), 200
