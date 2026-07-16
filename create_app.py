@@ -56,8 +56,10 @@ def create_app(config_class=Config):
     @app.route("/")
     def home():
         return {
-        "message": "E-Commerce Backend API is running",
-        "swagger": "/apidocs/"
-    }
+            "success": True,
+            "message": "E-Commerce Backend API is running successfully",
+            "documentation": "/apidocs/",
+            "version": "1.0.0"
+    }, 200
 
     return app
