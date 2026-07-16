@@ -34,6 +34,9 @@ def create_app(config_class=Config):
 
     db.init_app(app)
 
+    with app.app_context():
+        db.create_all()
+
     swagger = Swagger(app)
 
     migrate.init_app(app, db)
