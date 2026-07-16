@@ -10,6 +10,45 @@ cart_bp = Blueprint("cart",__name__)
 
 @cart_bp.route("/carts",methods =["POST"])
 def add_cart():
+    """
+Add product to cart
+---
+tags:
+  - Cart
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: body
+    in: body
+    required: true
+    schema:
+      properties:
+        product_id:
+          type: integer
+          example: 1
+
+        quantity:
+          type: integer
+          example: 2
+
+responses:
+  201:
+    description: Product added to cart successfully
+
+  400:
+    description: Invalid request
+
+  401:
+    description: Missing or invalid token
+
+  404:
+    description: Product not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -43,6 +82,26 @@ def add_cart():
 
 @cart_bp.route("/carts",methods=["GET"])
 def view_carts():
+    """
+View cart
+---
+tags:
+  - Cart
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+responses:
+  200:
+    description: Cart fetched successfully
+
+  401:
+    description: Missing or invalid token
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -60,6 +119,47 @@ def view_carts():
 
 @cart_bp.route("/carts/<int:id>",methods=["PUT"])
 def update_carts(id):
+    """
+Update cart quantity
+---
+tags:
+  - Cart
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+  - name: body
+    in: body
+    required: true
+    schema:
+      properties:
+        quantity:
+          type: integer
+          example: 5
+
+responses:
+  200:
+    description: Quantity updated successfully
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Forbidden
+
+  404:
+    description: Cart item not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -94,6 +194,38 @@ def update_carts(id):
 
 @cart_bp.route("/carts/<int:id>", methods =["DELETE"])
 def delete_cart(id):
+    """
+Delete cart item
+---
+tags:
+  - Cart
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+  200:
+    description: Product removed from cart successfully
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Forbidden
+
+  404:
+    description: Cart item not found
+"""
     decoded = token_verification()
 
     if not decoded:

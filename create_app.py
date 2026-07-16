@@ -21,6 +21,8 @@ from routes.category import category_bp
 from routes.orders import orders_bp
 from routes.admin import admin_bp
 
+from flasgger import Swagger
+
 migrate = Migrate()
 
 
@@ -31,6 +33,8 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     db.init_app(app)
+
+    swagger = Swagger(app)
 
     migrate.init_app(app, db)
 

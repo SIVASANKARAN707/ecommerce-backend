@@ -7,6 +7,26 @@ user_bp = Blueprint("user",__name__)
 
 @user_bp.route("/users", methods=["GET"])
 def get_users():
+    """
+Get all users
+---
+tags:
+  - Users
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+responses:
+  200:
+    description: Users fetched successfully
+
+  401:
+    description: Missing or invalid token
+"""
     
     decoded = token_verification()
 
@@ -28,6 +48,35 @@ def get_users():
 
 @user_bp.route("/users/<int:id>", methods = ["GET"])
 def get_particular_user(id):
+    """
+Get user by ID
+---
+tags:
+  - Users
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+  200:
+    description: User fetched successfully
+
+  401:
+    description: Missing or invalid token
+
+  404:
+    description: User not found
+"""
 
     decoded = token_verification()
     if not decoded:
@@ -52,6 +101,55 @@ def get_particular_user(id):
 
 @user_bp.route("/users/<int:id>", methods = ["PUT"])
 def update_user(id):
+    """
+Update user
+---
+tags:
+  - Users
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+  - name: body
+    in: body
+    required: true
+    schema:
+      properties:
+        username:
+          type: string
+          example: siva
+
+        email:
+          type: string
+          example: siva@gmail.com
+
+        new_password:
+          type: string
+          example: password123
+
+responses:
+  200:
+    description: User updated successfully
+
+  400:
+    description: Invalid request
+
+  401:
+    description: Missing or invalid token
+
+  404:
+    description: User not found
+"""
 
     decoded = token_verification()
     if not decoded:
@@ -82,6 +180,38 @@ def update_user(id):
 
 @user_bp.route("/users/<int:id>", methods = ["DELETE"])
 def delete_user(id):
+    """
+Delete user
+---
+tags:
+  - Users
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+  200:
+    description: User deleted successfully
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Forbidden
+
+  404:
+    description: User not found
+"""
 
     decoded = token_verification()
     if not decoded:

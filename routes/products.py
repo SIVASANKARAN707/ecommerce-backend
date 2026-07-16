@@ -30,6 +30,60 @@ def allowed_file(filename):
 @products_bp.route("/products", methods=["GET"])
 def get_products():
 
+    """
+Get all products
+---
+tags:
+  - Products
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+  - name: search
+    in: query
+    type: string
+    required: false
+    example: laptop
+
+  - name: category
+    in: query
+    type: integer
+    required: false
+    example: 1
+
+  - name: page
+    in: query
+    type: integer
+    required: false
+    example: 1
+
+  - name: limit
+    in: query
+    type: integer
+    required: false
+    example: 10
+
+  - name: sort
+    in: query
+    type: string
+    required: false
+    enum:
+      - price
+      - -price
+
+responses:
+
+  200:
+    description: Products fetched successfully
+
+  401:
+    description: Missing or invalid token
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -81,6 +135,36 @@ def get_products():
 
 @products_bp.route("/products/<int:id>",methods=["GET"])
 def get_product(id):
+    """
+Get product by ID
+---
+tags:
+  - Products
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+
+  200:
+    description: Product fetched successfully
+
+  401:
+    description: Missing or invalid token
+
+  404:
+    description: Product not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -107,6 +191,67 @@ def get_product(id):
 
 @products_bp.route("/products/<int:id>", methods =["PUT"])
 def update_product(id):
+    """
+Update product
+---
+tags:
+  - Products
+
+consumes:
+  - multipart/form-data
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+
+  - name: product_name
+    in: formData
+    type: string
+
+  - name: product_price
+    in: formData
+    type: integer
+
+  - name: product_description
+    in: formData
+    type: string
+
+  - name: product_stock
+    in: formData
+    type: integer
+
+  - name: category_id
+    in: formData
+    type: integer
+
+  - name: image
+    in: formData
+    type: file
+
+responses:
+
+  200:
+    description: Product updated successfully
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Only admin can update products
+
+  404:
+    description: Product not found
+"""
+
+
     decoded = token_verification()
 
     if not decoded:
@@ -137,9 +282,106 @@ def update_product(id):
 
 
 @products_bp.route("/products", methods =["POST"])
-
+    
 
 def create_product():
+    """
+Create a new product
+---
+tags:
+  - Products
+
+consumes:
+  - multipart/form-data
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT token of an admin user
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.0noGoFDsTlDhfaYt2tbjBBCFT7lM5hhvUjhLoACAqzA"
+
+  - name: product_name
+    in: formData
+    type: string
+    required: true
+    example: Laptop
+
+  - name: category_id
+    in: formData
+    type: integer
+    required: true
+    example: 1
+
+  - name: product_price
+    in: formData
+    type: integer
+    required: true
+    example: 75000
+
+  - name: product_description
+    in: formData
+    type: string
+    required: false
+    example: Gaming Laptop with RTX graphics
+
+  - name: product_stock
+    in: formData
+    type: integer
+    required: true
+    example: 10
+
+  - name: image
+    in: formData
+    type: file
+    required: false
+    description: JPG, JPEG, PNG or WEBP image
+
+responses:
+  200:
+    description: Product created successfully
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: product created successfully
+
+  400:
+    description: Validation error
+    schema:
+      properties:
+        message:
+          type: string
+          example: category_id is required
+
+  401:
+    description: Missing or invalid token
+    schema:
+      properties:
+        message:
+          type: string
+          example: missing or invalid token
+
+  403:
+    description: Only admin can create products
+    schema:
+      properties:
+        message:
+          type: string
+          example: forbidden
+
+  404:
+    description: Category not found
+    schema:
+      properties:
+        message:
+          type: string
+          example: Category not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -228,6 +470,39 @@ def create_product():
 
 @products_bp.route("/products/<int:id>", methods =["DELETE"])
 def delete_product(id):
+    """
+Delete product
+---
+tags:
+  - Products
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+
+  200:
+    description: Product deleted successfully
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Only admin can delete products
+
+  404:
+    description: Product not found
+"""
     decoded = token_verification()
 
     if not decoded:

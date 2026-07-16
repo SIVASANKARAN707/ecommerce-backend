@@ -10,6 +10,38 @@ auth_bp = Blueprint("auth",__name__)
 
 @auth_bp.route("/register", methods = ["POST"])
 def register():
+
+    """
+Register a new user
+---
+tags:
+  - Authentication
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      properties:
+        username:
+          type: string
+          example: siva
+        email: 
+          type: string
+          example: siva@gmail.com
+        password:
+          type: string
+          example: "1234"
+
+responses:
+  200:
+    description: User registered successfully
+
+  400:
+    description: Invalid request
+"""
+
+
     data = request.json
 
     username = data.get("username")
@@ -56,6 +88,44 @@ def register():
 
 @auth_bp.route("/login",methods=["POST"])
 def login():
+
+
+    """
+User Login
+---
+tags:
+  - Authentication
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      properties:
+        email:
+          type: string
+          example: siva@gmail.com
+        password:
+          type: string
+          example: "1234"
+
+responses:
+  200:
+    description: Login successful
+    schema:
+      properties:
+        success:
+          type: boolean
+          example: true
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIs...
+
+  401:
+    description: Invalid username or password
+"""
+
+
     data = request.json
 
     email = data.get("email")

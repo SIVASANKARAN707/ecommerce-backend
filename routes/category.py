@@ -10,6 +10,43 @@ category_bp = Blueprint("category",__name__)
 
 @category_bp.route("/categories",methods=["POST"])
 def create_category():
+    """
+Create a new category
+---
+tags:
+  - Categories
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: Admin JWT Token
+
+  - name: body
+    in: body
+    required: true
+    schema:
+      properties:
+        name:
+          type: string
+          example: Electronics
+
+responses:
+
+  201:
+    description: Category created successfully
+
+  400:
+    description: Category already exists or invalid request
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Only admin can create category
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -42,6 +79,52 @@ def create_category():
 
 @category_bp.route("/categories/<int:id>",methods=["PUT"])
 def update_category(id):
+    """
+Update category
+---
+tags:
+  - Categories
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: Admin JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+  - name: body
+    in: body
+    required: true
+    schema:
+      properties:
+        name:
+          type: string
+          example: Home Appliances
+
+responses:
+
+  200:
+    description: Category updated successfully
+
+  400:
+    description: Invalid request
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Only admin can update category
+
+  404:
+    description: Category not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -68,6 +151,40 @@ def update_category(id):
 
 @category_bp.route("/categories/<int:id>",methods=["DELETE"])
 def delete_category(id):
+    """
+Delete category
+---
+tags:
+  - Categories
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: Admin JWT Token
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+
+  200:
+    description: Category deleted successfully
+
+  401:
+    description: Missing or invalid token
+
+  403:
+    description: Only admin can delete category
+
+  404:
+    description: Category not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -91,6 +208,36 @@ def delete_category(id):
 
 @category_bp.route("/categories/<int:id>",methods=["GET"])
 def select_particular_catagory(id):
+    """
+Get category by ID
+---
+tags:
+  - Categories
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+
+  - name: id
+    in: path
+    type: integer
+    required: true
+    example: 1
+
+responses:
+
+  200:
+    description: Category fetched successfully
+
+  401:
+    description: Missing or invalid token
+
+  404:
+    description: Category not found
+"""
     decoded = token_verification()
 
     if not decoded:
@@ -115,6 +262,28 @@ def select_particular_catagory(id):
 
 @category_bp.route("/categories",methods=["GET"])
 def view_all_category():
+    """
+Get all categories
+---
+tags:
+  - Categories
+
+parameters:
+
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT Token
+
+responses:
+
+  200:
+    description: Categories fetched successfully
+
+  401:
+    description: Missing or invalid token
+"""
     decoded = token_verification()
 
     if not decoded:

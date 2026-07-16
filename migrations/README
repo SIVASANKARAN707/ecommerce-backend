@@ -1,1 +1,239 @@
-Single-database configuration for Flask.
+# E-Commerce Backend API
+
+## Project Overview
+
+This project is a RESTful E-Commerce Backend API built using Flask and SQLAlchemy. It provides secure JWT authentication, role-based authorization, product and category management, shopping cart functionality, order processing, and an admin dashboard. The project follows a modular architecture and includes automated testing with Pytest and interactive API documentation using Swagger (Flasgger).
+
+## Features
+
+- User Registration & Login
+- JWT Authentication
+- Role-Based Authorization (Admin & Customer)
+- Product Management (CRUD)
+- Category Management (CRUD)
+- Shopping Cart
+- Checkout & Order Management
+- Admin Dashboard
+- Swagger API Documentation
+- Pytest Test Suite
+- 87% Test Coverage
+
+## Technologies Used
+
+- Python 3.11
+- Flask
+- Flask-SQLAlchemy
+- Flask-Migrate
+- SQLite
+- JWT (PyJWT)
+- Flasgger (Swagger UI)
+- Pytest
+- Git & GitHub
+
+## Project Structure
+
+```text
+ecommerce_backend/
+│
+├── migrations/
+├── models/
+├── routes/
+├── tests/
+├── uploads/
+├── utils/
+│
+├── app.py
+├── create_app.py
+├── config.py
+├── extensions.py
+├── requirements.txt
+└── README.md
+```
+
+
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/SIVASANKARAN707/ecommerce-backend.git
+```
+
+### 2. Navigate to the project
+
+```bash
+cd ecommerce-backend
+```
+
+### 3. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+### 4. Activate the virtual environment
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux / macOS**
+
+```bash
+source venv/bin/activate
+```
+
+### 5. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 6. Run database migrations
+
+```bash
+flask db upgrade
+```
+
+### 7. Start the application
+
+```bash
+python app.py
+```
+
+
+## Environment Variables
+
+Create a `.env` file in the project root.
+
+```env
+JWT_SECRET=your_secret_key
+DATABASE_URL=sqlite:///ecommerce.db
+```
+
+
+## Database Setup
+
+Initialize the database using Flask-Migrate.
+
+```bash
+flask db init
+```
+
+```bash
+flask db migrate -m "Initial migration"
+```
+
+```bash
+flask db upgrade
+```
+
+> **Note:**  
+> If the `migrations` folder already exists, you only need to run:
+
+```bash
+flask db upgrade
+```
+
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Register a new user |
+| POST | `/login` | Login and receive JWT token |
+| GET | `/users` | Get all users |
+| GET | `/users/<id>` | Get user by ID |
+| PUT | `/users/<id>` | Update user |
+| DELETE | `/users/<id>` | Delete user |
+| GET | `/products` | Get all products |
+| POST | `/products` | Create a product |
+| PUT | `/products/<id>` | Update a product |
+| DELETE | `/products/<id>` | Delete a product |
+| GET | `/categories` | Get all categories |
+| POST | `/categories` | Create a category |
+| GET | `/carts` | View shopping cart |
+| POST | `/carts` | Add item to cart |
+| POST | `/checkout` | Place an order |
+| GET | `/orders` | View orders |
+| GET | `/admin` | Admin dashboard |
+
+
+## Authentication
+
+This project uses **JWT (JSON Web Token)** for authentication.
+
+After logging in, include the token in the `Authorization` header for protected endpoints.
+
+Example:
+
+```http
+Authorization: your_jwt_token
+```
+
+## Swagger Documentation
+
+Interactive API documentation is available using **Flasgger**.
+
+Run the application and open:
+
+```
+http://127.0.0.1:5000/apidocs
+```
+
+Swagger UI allows you to:
+
+- Explore all API endpoints
+- Test APIs directly from the browser
+- View request and response schemas
+
+
+## Running Tests
+
+Run all tests:
+
+```bash
+python -m pytest
+```
+
+Run tests with coverage:
+
+```bash
+python -m pytest --cov=.
+```
+
+## Test Coverage
+
+- 34+ Automated Tests
+- 87% Code Coverage
+- Pytest Fixtures
+- Authentication Tests
+- Product Tests
+- Cart Tests
+- Order Tests
+- Admin Tests
+
+
+## Future Improvements
+
+- PostgreSQL Support
+- Docker Containerization
+- Redis Caching
+- Payment Gateway Integration
+- Email Verification
+- Password Reset
+- Wishlist Feature
+- Product Reviews & Ratings
+- Coupon System
+- CI/CD Pipeline
+
+## Author
+
+**Siva Sankaran**
+
+Backend Developer (Python & Flask)
+
+GitHub: https://github.com/SIVASANKARAN707

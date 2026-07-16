@@ -11,6 +11,81 @@ admin_bp = Blueprint("admin", __name__)
 
 @admin_bp.route("/admin",methods =["GET"])
 def view_dashboard():
+    """
+Admin Dashboard
+---
+tags:
+  - Admin
+
+summary: Get admin dashboard statistics
+
+description: >
+  Returns dashboard statistics including total users, products,
+  categories, orders, revenue and order status counts.
+  Accessible only by admin users.
+
+parameters:
+  - name: Authorization
+    in: header
+    type: string
+    required: true
+    description: Admin JWT Token
+
+responses:
+
+  200:
+    description: Dashboard data retrieved successfully
+    schema:
+      type: object
+      properties:
+        total_users:
+          type: integer
+          example: 25
+
+        total_products:
+          type: integer
+          example: 120
+
+        total_categories:
+          type: integer
+          example: 8
+
+        total_orders:
+          type: integer
+          example: 60
+
+        total_revenue:
+          type: integer
+          example: 350000
+
+        pending_orders:
+          type: integer
+          example: 10
+
+        delivered_orders:
+          type: integer
+          example: 45
+
+        cancelled_orders:
+          type: integer
+          example: 5
+
+  401:
+    description: Missing or invalid token
+    schema:
+      properties:
+        message:
+          type: string
+          example: Missing or Invalid Token
+
+  403:
+    description: Only admin can access this endpoint
+    schema:
+      properties:
+        message:
+          type: string
+          example: only admin can access
+"""
 
     decoded = token_verification()
 
